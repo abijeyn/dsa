@@ -102,11 +102,11 @@ public class StackQueueAppGUI extends JFrame {
         while (true) {
             try {
                 String input = JOptionPane.showInputDialog(this, "Enter array size:", "Array Size", JOptionPane.QUESTION_MESSAGE);
-                if (input == null) return;  // Handle cancel button
+                if (input == null) return;
                 maxSize = Integer.parseInt(input);
                 stackArray = new int[maxSize];
                 queueArray = new int[maxSize];
-                break; // Exit loop if input is valid
+                break;
             } catch (NumberFormatException e) {
                 JOptionPane.showMessageDialog(this, "Invalid input. Please enter an integer.", "Error", JOptionPane.ERROR_MESSAGE);
             }
