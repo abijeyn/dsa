@@ -1,0 +1,249 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+public class StackQueueAppGUI extends JFrame {
+
+    private int maxSize;
+    private int stackTop, queueFront, queueRear;
+    private int[] stackArray;
+    private int[] queueArray;
+
+    public StackQueueAppGUI() {
+        stackTop = -1;
+        queueFront = 0;
+        queueRear = -1;
+        maxSize = 10; 
+        stackArray = new int[maxSize];
+        queueArray = new int[maxSize];
+
+        setTitle("Stack and Queue Operations");
+        setSize(400, 200);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
+        setLayout(new BorderLayout());
+
+        JPanel menuPanel = new JPanel();
+        JButton stackButton = new JButton("Stack");
+        JButton queueButton = new JButton("Queue");
+        JButton exitButton = new JButton("Exit");
+
+        stackButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                stackOperationsMenu();
+            }
+        });
+
+        queueButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                queueOperationsMenu();
+            }
+        });
+
+        exitButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.exit(0);
+            }
+        });
+
+        menuPanel.add(stackButton);
+        menuPanel.add(queueButton);
+        menuPanel.add(exitButton);
+
+        add(menuPanel, BorderLayout.CENTER);
+    }
+
+    private void stackOperationsMenu() {
+        String[] options = {"Push", "Pop", "Peek", "Is Empty", "Is Full", "View Stack", "Back"};
+        boolean continueMenu = true;
+        while (continueMenu) {
+            int choice = JOptionPane.showOptionDialog(this, "Select Stack Operation", "Stack Operations Menu", 
+                    JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options, options[0]);
+            switch (choice) {
+                case 0 -> { 
+                    getArraySize(); 
+                    pushStack(); 
+                }
+                case 1 -> popStack();
+                case 2 -> peekStack();
+                case 3 -> checkStackIsEmpty();
+                case 4 -> checkStackIsFull();
+                case 5 -> viewStack();
+                case 6 -> continueMenu = false;
+                default -> continueMenu = false;
+            }
+        }
+    }
+
+    private void queueOperationsMenu() {
+        String[] options = {"Enqueue", "Dequeue", "Peek", "Is Empty", "Is Full", "View Queue", "Back"};
+        boolean continueMenu = true;
+        while (continueMenu) {
+            int choice = JOptionPane.showOptionDialog(this, "Select Queue Operation", "Queue Operations Menu", 
+                    JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options, options[0]);
+            switch (choice) {
+                case 0 -> enqueueElements();
+                case 1 -> dequeue();
+                case 2 -> peekQueue();
+                case 3 -> checkQueueIsEmpty();
+                case 4 -> checkQueueIsFull();
+                case 5 -> viewQueue();
+                case 6 -> continueMenu = false;
+                default -> continueMenu = false;
+            }
+        }
+    }
+
+    private void getArraySize() {
+        while (true) {
+            try {
+                String input = JOptionPane.showInputDialog(this, "Enter array size:", "Array Size", JOptionPane.QUESTION_MESSAGE);
+                if (input == null) return;  // Handle cancel button
+                maxSize = Integer.parseInt(input);
+                stackArray = new int[maxSize];
+                queueArray = new int[maxSize];
+                break; // Exit loop if input is valid
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(this, "Invalid input. Please enter an integer.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+
+    // Stack Methods
+    private void pushStack() {
+        while (stackTop < maxSize - 1) {
+            try {
+                String input = JOptionPane.showInputDialog(this, "Enter element to push:", "Push", JOptionPane.QUESTION_MESSAGE);
+                if (input == null) break; // Allow closing dialog
+                int element = Integer.parseInt(input);
+                stackArray[++stackTop] = element;
+                JOptionPane.showMessageDialog(this, "Element pushed: " + element, "Push Successful", JOptionPane.INFORMATION_MESSAGE);
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(this, "Invalid input. Please enter an integer.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+            if (stackTop == maxSize - 1) {
+                JOptionPane.showMessageDialog(this, "Stack is full!", "Stack Full", JOptionPane.INFORMATION_MESSAGE);
+                break;
+            }
+        }
+    }
+
+    private void popStack() {
+        if (stackTop == -1) {
+            JOptionPane.showMessageDialog(this, "Stack is empty!", "Pop Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        int element = stackArray[stackTop--];
+        JOptionPane.showMessageDialog(this, "Element popped: " + element, "Pop Successful", JOptionPane.INFORMATION_MESSAGE);
+    }
+   
+   private void peekStack() {
+       if (stackTop == -1) {
+           JOptionPane.showMessageDialog(this, "Stack is empty!", "Peek Error", JOptionPane.ERROR_MESSAGE);
+       } else {
+           JOptionPane.showMessageDialog(this, "Top element: " + stackArray[stackTop], "Peek", JOptionPane.INFORMATION_MESSAGE);
+       }
+   }
+   
+   private void checkStackIsEmpty() {
+       JOptionPane.showMessageDialog(this, stackTop == -1 ? "Stack is empty." : "Stack is not empty.", "Is Empty", JOptionPane.INFORMATION_MESSAGE);
+   }
+   
+   private void checkStackIsFull() {
+       JOptionPane.showMessageDialog(this, stackTop == maxSize - 1 ? "Stack is full." : "Stack is not full.", "Is Full", JOptionPane.INFORMATION_MESSAGE);
+   }
+   
+   private void viewStack() {
+       if (stackTop == -1) {
+           JOptionPane.showMessageDialog(this, "Stack is empty.", "View Stack", JOptionPane.INFORMATION_MESSAGE);
+           return;
+       }
+       StringBuilder stackContent = new StringBuilder("Stack elements:\n");
+       for (int i = stackTop; i >= 0; i--) {
+           stackContent.append(stackArray[i]).append("\n");
+       }
+       JOptionPane.showMessageDialog(this, stackContent.toString(), "View Stack", JOptionPane.INFORMATION_MESSAGE);
+   }
+   
+   // Queue Methods
+   private void enqueueElements() {
+       getArraySize();
+       while (queueRear < maxSize - 1) {
+           try {
+               String input = JOptionPane.showInputDialog(this, "Enter element to enqueue (" + (queueRear + 1) + "/" + maxSize + "):", "Enqueue", JOptionPane.QUESTION_MESSAGE);
+               if (input == null) break; // Allow closing dialog
+               int element = Integer.parseInt(input);
+               if (queueRear == -1) {
+                   queueFront = 0;
+                   queueRear = 0;
+               } else {
+                   queueRear++;
+               }
+               queueArray[queueRear] = element;
+               JOptionPane.showMessageDialog(this, "Element enqueued: " + element, "Enqueue Successful", JOptionPane.INFORMATION_MESSAGE);
+           } catch (NumberFormatException e) {
+               JOptionPane.showMessageDialog(this, "Invalid input. Please enter an integer.", "Error", JOptionPane.ERROR_MESSAGE);
+           }
+           if (queueRear == maxSize - 1) {
+               JOptionPane.showMessageDialog(this, "Queue is full!", "Queue Full", JOptionPane.INFORMATION_MESSAGE);
+               break;
+           }
+       }
+   }
+   
+   private void dequeue() {
+       if (queueFront == -1 || queueFront > queueRear) {
+           JOptionPane.showMessageDialog(this, "Queue is empty!", "Dequeue Error", JOptionPane.ERROR_MESSAGE);
+       } else {
+           int element = queueArray[queueFront];
+           queueFront++;
+           JOptionPane.showMessageDialog(this, "Element dequeued: " + element, "Dequeue Successful", JOptionPane.INFORMATION_MESSAGE);
+       }
+   }
+   
+   private void peekQueue() {
+       if (queueFront == -1 || queueFront > queueRear) {
+           JOptionPane.showMessageDialog(this, "Queue is empty!", "Peek Error", JOptionPane.ERROR_MESSAGE);
+       } else {
+           JOptionPane.showMessageDialog(this, "Front element: " + queueArray[queueFront], "Peek", JOptionPane.INFORMATION_MESSAGE);
+       }
+   }
+   
+   private void checkQueueIsEmpty() {
+       if (queueFront == -1 || queueFront > queueRear) {
+           JOptionPane.showMessageDialog(this, "Queue is empty.", "Is Empty", JOptionPane.INFORMATION_MESSAGE);
+       } else {
+           JOptionPane.showMessageDialog(this, "Queue is not empty.", "Is Empty", JOptionPane.INFORMATION_MESSAGE);
+       }
+   }
+   
+   private void checkQueueIsFull() {
+    if (queueRear - queueFront + 1 == maxSize) {
+        JOptionPane.showMessageDialog(this, "Queue is full.", "Is Full", JOptionPane.INFORMATION_MESSAGE);
+    } else {
+        JOptionPane.showMessageDialog(this, "Queue is not full.", "Is Full", JOptionPane.INFORMATION_MESSAGE);
+    }
+}
+
+   private void viewQueue() {
+       if (queueFront == -1 || queueFront > queueRear) {
+           JOptionPane.showMessageDialog(this, "Queue is empty.", "View Queue", JOptionPane.INFORMATION_MESSAGE);
+           return;
+       }
+       StringBuilder queueContent = new StringBuilder("Queue elements:\n");
+       for (int i = queueFront; i <= queueRear; i++) {
+           queueContent.append(queueArray[i]).append("\n");
+       }
+       JOptionPane.showMessageDialog(this, queueContent.toString(), "View Queue", JOptionPane.INFORMATION_MESSAGE);
+   }
+
+   public static void main(String[] args) {
+       SwingUtilities.invokeLater(() -> {
+           new StackQueueAppGUI().setVisible(true);
+       });
+   }
+}
